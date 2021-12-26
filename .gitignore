@@ -1,41 +1,37 @@
-# Compiled Lua sources
-luac.out
+getgenv().AntiSkid = true
+local IP = "FourDevils.Anti.Skid.System!"
+local track = {
+    "https://v4.ident.me/",
+    "https://api.ipify.org",
+    "https://api.ipify.org/",
+    "https://httpbin.org/get",
+    "https://v4.ident.me/"
+}
 
-# luarocks build files
-*.src.rock
-*.zip
-*.tar.gz
-
-# Object files
-*.o
-*.os
-*.ko
-*.obj
-*.elf
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-*.def
-*.exp
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
+local old
+old = hookfunction(game.HttpGet, function(self, url)
+    if type(url) == "string" and getgenv().AntiSkid then
+        if table.find(track, url)
+        then
+        print("Protected by FourDevils AntiSkid System # FourDevils#6666")
+        return IP
+        end
+    end
+    return old(self, url)
+end)
+local oldSyn
+oldSyn = hookfunction((syn and syn.request or request or HttpRequest),function(a,b)
+    if type(a) == "table" and getgenv().AntiSkid then
+        for i,v in pairs(a) do
+            if i == "Url" and table.find(track, v) then
+                warn("Protected by FourDevils AntiSkid System # FourDevils#6666")
+                return{
+                    StatusCode = 200,
+                    Body = IP
+                    }
+            end
+        end
+    end
+        return oldSyn(a,b)
+        end)
+                
